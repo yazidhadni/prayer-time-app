@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup
 
-from prayer_time_app.utils.decorators import driver_decorator
-# TODO: remove datetime_utils functions
-from prayer_time_app.utils.datetime_utils import *
+# from prayer_time_app.utils.decorators import driver_decorator
+# from prayer_time_app.utils.datetime_utils import *
+
+from utils.decorators import driver_decorator
+from utils.datetime_utils import *
 
 
 @driver_decorator
@@ -19,18 +21,22 @@ def extract_prayer_times(driver):
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     # Save the HTML content to a file
-    with open(
-        "/Users/yazidhadni/Desktop/info_projects/prayer_time_app/html/mawaqit.html", "w"
-    ) as f:
-        f.write(str(soup))
+    # with open(
+    #     "/Users/yazidhadni/Desktop/info_projects/prayer_time_app/html/mawaqit.html", "w"
+    # ) as f:
+    #     f.write(str(soup))
     # Find the 'prayers' div
     prayers_div = soup.find("div", class_="prayers")
     if prayers_div:
         # Find all div elements with class 'time' inside the 'prayers' div
         time_divs = prayers_div.find_all("div", class_="time")
         # Extract times from the 'time' divs
+        prayer_names = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
         times = [div.find("div").text for div in time_divs]
-        return times
+        prayers = {}
+        for prayer_name, time in zip(prayer_names, times):
+            prayers[prayer_name] = time
+        return prayers
     else:
         print("\033[91mError: 'prayers' div not found.\033[0m")
         return None
@@ -38,12 +44,12 @@ def extract_prayer_times(driver):
 
 def main():
     times = extract_prayer_times()
-    print(times)
+    print(f"{times=}")
     dt_times = str_to_datetime(times)
-    print(dt_times)
-    delta_ = delta(dt_times)
-    print(delta_)
-    # print(seconds_to_hh_mm(delta_))
+    print(f"{dt_times=}")
+    delta = delta_prayers(dt_times)
+    print(delta)
+    print(seconds_to_hh_mm(delta))
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
-from typing import Any, List
+from typing import Dict, List
 import datetime as dt
 
 
-def str_to_datetime(times: List[str]) -> List[dt.datetime]:
+def str_to_datetime(times: Dict[str, str]) -> Dict[str, dt.datetime]:
     """
     Convert a list of strings representing times in 'HH:MM' format to a list of datetime objects.
 
@@ -12,9 +12,9 @@ def str_to_datetime(times: List[str]) -> List[dt.datetime]:
     Returns:
     - List[datetime]: A list of datetime objects corresponding to the input times.
     """
-    dt_times = []  # List to store converted datetime objects
+    dt_times = {}  # Dict to store converted datetime objects
     current_datetime = dt.datetime.now()  # Get the current date and time
-    for time in times:
+    for prayer, time in times.items():
         # Parse the time string into a datetime object, ignoring the date components
         dt_time = dt.datetime.strptime(time, "%H:%M")
         # Set the year, month, and day components to the current date
@@ -23,19 +23,24 @@ def str_to_datetime(times: List[str]) -> List[dt.datetime]:
             month=current_datetime.month,
             day=current_datetime.day,
         )
-        dt_times.append(dt_time)
+        dt_times[prayer] = dt_time
     return dt_times
 
 
-def delta(dt_times: List[dt.datetime]):
-    # TODO: faire tous les cas possibles notamment lorsque qu'on a 29/11 et qu'il est 23:00
+def delta_prayers(dt_times: Dict[str, dt.datetime]) -> dt.timedelta:
+    # TODO: Après Isha : lorsque qu'on a 29/11 et qu'il est 23:00
     # et que la prochaine priere est le fajr du 24/11
     current_time = dt.datetime.now()
-    delta = current_time - dt_times[0]
-    if delta < dt.timedelta(0):
-        negative = "c'est négatif"
-        return negative
-    return delta
+    delta_fajr = dt_times['fajr'] - current_time
+    delta_dhuhr = dt_times['dhuhr'] - current_time
+    delta_asr = dt_times['asr'] - current_time
+    delta_maghrib = dt_times['maghrib'] - current_time
+    delta_isha = dt_times['isha'] - current_time
+    deltas = [delta_fajr, delta_dhuhr, delta_asr, delta_maghrib, delta_isha]
+    for delta in deltas:
+        if delta > dt.timedelta(0):
+            return delta
+    return dt.timedelta(0)
 
 
 def seconds_to_hh_mm(delta_time: dt.timedelta) -> str:
