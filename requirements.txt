@@ -1,6 +1,16 @@
+altgraph==0.17.4
+black==24.4.2
 certifi==2024.2.2
 charset-normalizer==3.3.2
+click==8.1.7
 idna==3.7
+macholib==1.16.3
+modulegraph==0.19.6
+mypy-extensions==1.0.0
+packaging==24.0
+pathspec==0.12.1
+platformdirs==4.2.2
+py2app==0.28.8
 pyobjc-core==10.2
 pyobjc-framework-Cocoa==10.2
 requests==2.32.2
